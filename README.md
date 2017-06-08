@@ -6,6 +6,12 @@ This is intended for the monitoring tools Centreon.
 It uses the Simple Network Management Protocol (SNMP).
 It also produce performance data for graphical representation in Centreon.
 
+## Download
+To download the pluggin run this command in your pluggin folder :
+```
+wget https://raw.githubusercontent.com/CorentinTh/Centreon-Check_RAM_as400/master/check_as400_ram
+```
+
 ## Usage
 Run the script using this syntaxe :
 ```
