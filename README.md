@@ -8,13 +8,13 @@ It also produce performance data for graphical representation in Centreon.
 
 ## Download
 To download the pluggin run this command in your pluggin folder :
-```
+```shell
 wget https://raw.githubusercontent.com/CorentinTh/Centreon-Check_RAM_as400/master/check_as400_ram
 ```
 
 ## Usage
 Run the script using this syntaxe :
-```
+```shell
 ./check_as400_ram <host_address> <snmp_community> <snmp_version> <critical_threshold> <warning_threshold>
 ```
 * `host_address` : the IP address or the DNS of the server you want to check
@@ -25,7 +25,7 @@ Run the script using this syntaxe :
 
 ## Output exemple
 Here is an exemple of the command :
-```
+```shell
 ./check_as400_ram 192.168.1.114 MyCommunity 1 90 80
 OK : RAM, used : 58031172 Kb (43 %), free : 76055484 Kb (56 %) on 134086656 Kb | "used"=58031172;0:26114027;0:29015586;0;0
 ```
