@@ -7,6 +7,12 @@ CRITICAL_PERCENT=$4
 WARNING_PERCENT=$5
 
 MESSAGE_TYPE="UNKNOW"
+CODE_RETURN=3 # Unknow
+
+# 0 : Ok
+# 1 : Warning
+# 2 : Critical
+# 3 : Unknow
 
 # We get the amount of RAM available
 RAM_SIZE=`snmpwalk -v $SNMP_VERSION -c $COMMUNITY $IP hrMemorySize.0 | awk '{ print $(NF-1) }'`
@@ -45,12 +51,16 @@ WARNING_AMOUNT=`expr $RAM_USED \* $WARNING_PERCENT / 100`
 
 if [ $PERCENT_USED -gt $CRITICAL_PERCENT ]; then
 	MESSAGE_TYPE="CRITICAL"
+	CODE_RETURN=2 # Critical
 else
 	if [ $PERCENT_USED -gt $WARNING_PERCENT ]; then
 		MESSAGE_TYPE="WARNING"
+		CODE_RETURN=1 # Warning
 	else
 		MESSAGE_TYPE="OK"
+		CODE_RETURN=0 # Ok
 	fi
 fi
 
 echo "$MESSAGE_TYPE : RAM, used : $RAM_USED Kb ($PERCENT_USED %), free : $RAM_FREE Kb ($PERCENT_FREE %) on $RAM_SIZE Kb | \"used\"=$RAM_USED;0:$WARNING_AMOUNT;0:$CRITICAL_AMOUNT;0;0"
+return "$CODE_RETURN"
