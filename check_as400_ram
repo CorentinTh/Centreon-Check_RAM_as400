@@ -1,0 +1,56 @@
+#!/bin/sh
+
+IP=$1
+COMMUNITY=$2
+SNMP_VERSION=$3
+CRITICAL_PERCENT=$4
+WARNING_PERCENT=$5
+
+MESSAGE_TYPE="UNKNOW"
+
+# We get the amount of RAM available
+RAM_SIZE=`snmpwalk -v $SNMP_VERSION -c $COMMUNITY $IP hrMemorySize.0 | awk '{ print $(NF-1) }'`
+RAM_SIZE=`expr $RAM_SIZE`
+
+# We get the amount of RAM used
+
+# We look for the number of RAM elements
+NB_ELEMENTS=`snmpwalk -v $SNMP_VERSION -c $COMMUNITY $IP hrStorageIndex | awk '{ print $NF }' | tail -n 1`
+
+RAM_USED_TEMP=0
+RAM_USED=0
+
+# We make the sum of those elements
+for i in `seq 1 $NB_ELEMENTS`; do
+        TYPE_ELEMENT=`snmpwalk -v $SNMP_VERSION -c $COMMUNITY $IP hrStorageDescr.$i | awk '{ print $NF }'`
+        if [ "$TYPE_ELEMENT" != "RAM" ]; then
+                continue
+        fi
+
+        BLOCK_SIZE=`snmpwalk -v $SNMP_VERSION -c $COMMUNITY $IP hrStorageAllocationUnits.$i | awk '{ print $(NF-1) }'`
+        NB_BLOCKS_USED=`snmpwalk -v $SNMP_VERSION -c $COMMUNITY $IP hrStorageUsed.$i | awk '{ print $NF }'`
+        RAM_USED_TEMP=`expr $NB_BLOCKS_USED \* $BLOCK_SIZE`
+        RAM_USED=`expr $RAM_USED + $RAM_USED_TEMP`
+done
+
+RAM_USED=`expr $RAM_USED / 1024`
+RAM_FREE=`expr $RAM_SIZE - $RAM_USED`
+
+PERCENT_USED=`expr $RAM_USED \* 100 / $RAM_SIZE`
+PERCENT_FREE=`expr $RAM_FREE \* 100 / $RAM_SIZE`
+
+CRITICAL_AMOUNT=`expr $RAM_USED \* $CRITICAL_PERCENT / 100`
+WARNING_AMOUNT=`expr $RAM_USED \* $WARNING_PERCENT / 100`
+
+
+if [ $PERCENT_USED -gt $CRITICAL_PERCENT ]; then
+	MESSAGE_TYPE="CRITICAL"
+else
+	if [ $PERCENT_USED -gt $WARNING_PERCENT ]; then
+		MESSAGE_TYPE="WARNING"
+	else
+		MESSAGE_TYPE="OK"
+	fi
+fi
+
+echo "$MESSAGE_TYPE : RAM, used : $RAM_USED Kb ($PERCENT_USED %), free : $RAM_FREE Kb ($PERCENT_FREE %) on $RAM_SIZE Kb | \"used\"=$RAM_USED;0:$WARNING_AMOUNT;0:$CRITICAL_AMOUNT;0;0"
