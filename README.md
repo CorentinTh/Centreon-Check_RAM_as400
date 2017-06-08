@@ -1,9 +1,9 @@
 # Check-RAM-as400-for-Centreon
 
 ## Description
-A simple shell pluggin to check the ram usage of an IBM i (AS400) server.
-This is intended for the monitoring tools Centreon.
+A simple shell script to check the ram usage of an IBM i (AS400) server. This is intended for the monitoring tools Centreon.
 It uses the Simple Network Management Protocol (SNMP).
+
 It also produce performance data for graphical representation in Centreon.
 
 ## Download
